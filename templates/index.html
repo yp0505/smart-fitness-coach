@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Fitness Coach</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 700px; margin: auto; }
+    input, button { font-size: 1rem; padding: 0.6rem; margin-top: 10px; width: 100%; }
+    .response { margin-top: 2rem; background: #f4f4f4; padding: 1rem; border-left: 5px solid #00bfff; }
+  </style>
+</head>
+<body>
+  <h1>🏋️ Smart Fitness Coach</h1>
+  <form method="post">
+    <input type="text" name="query" placeholder="Ask your coach (e.g. show workout table)" required />
+    <button type="submit">Send</button>
+  </form>
+
+  {% if response %}
+    <div class="response">
+      <h3>🧠 Coach says:</h3>
+      <p>{{ response }}</p>
+    </div>
+  {% endif %}
+
+  {% if chart_json %}
+    <h3>📊 Workout Plan Visualization:</h3>
+    <div id="workout_chart"></div>
+    <script>
+      const chartData = {{ chart_json | safe }};
+      Plotly.newPlot("workout_chart", chartData.data, chartData.layout);
+    </script>
+  {% endif %}
+</body>
+</html>
