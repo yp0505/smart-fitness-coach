@@ -4,211 +4,32 @@
   <title>Smart Fitness Coach</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #05060a;
-      --card: #111827;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-    }
-
-    body {
-      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 2rem 1rem 4rem;
-      box-sizing: border-box;
-    }
-
-    .app-shell {
-      width: min(900px, 100%);
-      background: var(--card);
-      border-radius: 18px;
-      padding: 2.5rem;
-      box-shadow: 0 35px 120px rgba(15, 23, 42, 0.45);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-    }
-
-    h1 {
-      margin-top: 0;
-      font-size: clamp(2rem, 4vw, 2.75rem);
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    form {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    label {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    input[type="text"] {
-      font-size: 1.05rem;
-      padding: 0.95rem 1.15rem;
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      background: rgba(15, 23, 42, 0.6);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35);
-    }
-
-    button {
-      font-size: 1rem;
-      font-weight: 600;
-      padding: 0.9rem 1.1rem;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(120deg, #0ea5e9, #38bdf8);
-      color: #0b1120;
-      transition: transform 0.2s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    .examples {
-      margin-top: 1.8rem;
-      background: rgba(15, 23, 42, 0.7);
-      border-radius: 16px;
-      padding: 1.25rem 1.4rem;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-    }
-
-    .examples h3 {
-      margin: 0 0 0.75rem 0;
-      font-size: 1rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .prompt-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.65rem;
-    }
-
-    .prompt-chip {
-      background: rgba(56, 189, 248, 0.08);
-      color: var(--text);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 12px;
-      padding: 0.75rem;
-      font-size: 0.95rem;
-      text-align: left;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-
-    .prompt-chip:hover {
-      background: rgba(56, 189, 248, 0.2);
-      transform: translateY(-1px);
-    }
-
-    .response {
-      margin-top: 2rem;
-      background: rgba(15, 23, 42, 0.85);
-      border-radius: 16px;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      padding: 1.5rem;
-      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.1);
-    }
-
-    .response h3 {
-      margin-top: 0;
-      color: var(--accent);
-    }
-
-    .response-body {
-      white-space: pre-line;
-      line-height: 1.6;
-      font-size: 1rem;
-    }
-
-    .plotly-container {
-      margin-top: 2rem;
-      background: rgba(15, 23, 42, 0.85);
-      border-radius: 16px;
-      padding: 1.5rem;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-    }
-
-    @media (max-width: 640px) {
-      .app-shell {
-        padding: 1.75rem;
-      }
-    }
+    body { font-family: sans-serif; padding: 2rem; max-width: 700px; margin: auto; }
+    input, button { font-size: 1rem; padding: 0.6rem; margin-top: 10px; width: 100%; }
+    .response { margin-top: 2rem; background: #f4f4f4; padding: 1rem; border-left: 5px solid #00bfff; }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <h1>🏋️ Smart Fitness Coach</h1>
-    <p>Use science-backed guidance for workouts, nutrition, recovery, and supplements. Pick a prompt below or ask anything you like.</p>
+  <h1>🏋️ Smart Fitness Coach</h1>
+  <form method="post">
+    <input type="text" name="query" placeholder="Ask your coach (e.g. show workout table)" required />
+    <button type="submit">Send</button>
+  </form>
 
-    <form method="post">
-      <label for="query">Your prompt</label>
-      <input type="text" id="query" name="query" placeholder="Ask your coach (e.g. show workout table)" required />
-      <button type="submit">Ask the coach</button>
-    </form>
+  {% if response %}
+    <div class="response">
+      <h3>🧠 Coach says:</h3>
+      <p>{{ response }}</p>
+    </div>
+  {% endif %}
 
-    <section class="examples">
-      <h3>Quick ideas</h3>
-      <div class="prompt-grid">
-        {% for example in examples %}
-          <button type="button" class="prompt-chip" data-prompt="{{ example }}">{{ example }}</button>
-        {% endfor %}
-      </div>
-    </section>
-
-    {% if response %}
-      <div class="response">
-        <h3>🧠 Coach says:</h3>
-        <div class="response-body">{{ response | replace('\n', '<br />') | safe }}</div>
-      </div>
-    {% endif %}
-
-    {% if chart_json %}
-      <div class="plotly-container">
-        <h3>📊 Workout Plan Visualization:</h3>
-        <div id="workout_chart"></div>
-      </div>
-      <script>
-        const chartData = {{ chart_json | safe }};
-        Plotly.newPlot("workout_chart", chartData.data, chartData.layout);
-      </script>
-    {% endif %}
-  </div>
-
-  <script>
-    const promptInput = document.getElementById('query');
-    document.querySelectorAll('.prompt-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        promptInput.value = chip.dataset.prompt;
-        promptInput.focus();
-      });
-    });
-  </script>
+  {% if chart_json %}
+    <h3>📊 Workout Plan Visualization:</h3>
+    <div id="workout_chart"></div>
+    <script>
+      const chartData = {{ chart_json | safe }};
+      Plotly.newPlot("workout_chart", chartData.data, chartData.layout);
+    </script>
+  {% endif %}
 </body>
 </html>
