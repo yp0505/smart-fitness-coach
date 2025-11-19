@@ -115,6 +115,8 @@
       color: var(--text);
       outline: none;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     input[type="text"]:focus {
@@ -240,6 +242,12 @@
       background: radial-gradient(circle at top, rgba(56, 189, 248, 0.1), rgba(15, 23, 42, 0.85));
       padding: 1.25rem 1.5rem;
       box-shadow: 0 25px 65px rgba(2, 6, 23, 0.55), inset 0 0 0 1px rgba(148, 163, 184, 0.15);
+      width: 100%;
+    }
+
+    .hero .prompt-panel {
+      grid-column: 1 / -1;
+      margin-top: 0.5rem;
     }
 
     .prompt-panel h2 {
@@ -440,14 +448,6 @@
           </div>
         </div>
         <p class="lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
-        <div class="prompt-panel">
-          <h2>Plan your next move</h2>
-          <form method="post">
-            <label for="query">Your prompt</label>
-            <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
-            <button type="submit">Ask {{ coach_name }}</button>
-          </form>
-        </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
         <div class="holo-stage">
@@ -504,6 +504,14 @@
             <span class="holo-pulse second"></span>
           </div>
         </div>
+      </div>
+      <div class="prompt-panel">
+        <h2>Plan your next move</h2>
+        <form method="post">
+          <label for="query">Your prompt</label>
+          <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
+          <button type="submit">Ask {{ coach_name }}</button>
+        </form>
       </div>
     </header>
 
