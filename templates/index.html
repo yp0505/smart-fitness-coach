@@ -211,6 +211,15 @@
     }
 
     .hero {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 2rem;
+      flex: 1 0 auto;
+    }
+
+    .hero-frame {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       column-gap: 2.5rem;
@@ -218,9 +227,6 @@
       align-items: flex-start;
       align-content: flex-start;
       grid-auto-rows: min-content;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 2rem;
-      flex: 1 0 auto;
     }
 
     .hero-copy {
@@ -237,8 +243,8 @@
       margin: 0 0 0.5rem;
     }
 
-    .hero-copy .lede {
-      margin: 0;
+    .hero-lede {
+      margin: 1.25rem 0 0;
       font-size: 1.05rem;
       color: rgba(248, 250, 252, 0.85);
     }
@@ -253,8 +259,8 @@
     }
 
     .hero .prompt-panel {
-      grid-column: 1 / -1;
-      margin-top: 0;
+      width: 100%;
+      margin: 0;
     }
 
     .prompt-panel h2 {
@@ -428,10 +434,11 @@
 <body>
   <div class="app-shell">
     <header class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">Meet your AI trainer</p>
-        <div class="logo-lockup">
-          <span class="logo-mark" aria-hidden="true">
+      <div class="hero-frame">
+        <div class="hero-copy">
+          <p class="eyebrow">Meet your AI trainer</p>
+          <div class="logo-lockup">
+            <span class="logo-mark" aria-hidden="true">
             <svg viewBox="0 0 64 64" role="img" aria-label="FitAI hologram badge">
               <defs>
                 <linearGradient id="logoBeam" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -448,17 +455,16 @@
               <path d="M38 38 L44 34" stroke="#f472b6" stroke-width="3.5" stroke-linecap="round" />
               <path d="M32 26 L32 48" stroke="url(#logoBeam)" stroke-width="3.5" stroke-linecap="round" />
             </svg>
-          </span>
-          <div>
-            <p class="logo-caption">Precision coaching</p>
-            <h1>{{ coach_name }}</h1>
+            </span>
+            <div>
+              <p class="logo-caption">Precision coaching</p>
+              <h1>{{ coach_name }}</h1>
+            </div>
           </div>
         </div>
-        <p class="lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="holo-stage">
-          <div class="holo-screen">
+        <div class="hero-visual" aria-hidden="true">
+          <div class="holo-stage">
+            <div class="holo-screen">
             <svg class="holo-avatar" viewBox="0 0 260 320" role="img" aria-label="FitAI holographic workout">
               <defs>
                 <linearGradient id="avatarGlow" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -520,6 +526,7 @@
           <button type="submit">Ask {{ coach_name }}</button>
         </form>
       </div>
+      <p class="lede hero-lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
     </header>
 
     <section class="tips-grid" aria-label="Daily tips">
