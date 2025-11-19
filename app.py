@@ -96,7 +96,7 @@ async def home(request: Request):
 
 @app.post("/", response_class=HTMLResponse)
 async def handle_query(request: Request, query: str = Form(...)):
-    print("💬 Query received:", query)
+    print("Query received:", query)
     if "visualize" in query.lower():
         chart_json = generate_workout_chart()
         return templates.TemplateResponse(
@@ -112,8 +112,8 @@ async def handle_query(request: Request, query: str = Form(...)):
         result = llm.invoke(prompt)
         print("🧠 Response:", result)
     except Exception as e:
-        result = f"❌ Error: {str(e)}"
-        print("💥 Exception occurred:", result)
+        result = f"Error: {str(e)}"
+        print("Exception occurred:", result)
 
     return templates.TemplateResponse(
         "index.html",
