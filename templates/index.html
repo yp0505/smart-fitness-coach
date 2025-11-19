@@ -105,7 +105,8 @@
       color: var(--muted);
     }
 
-    input[type="text"] {
+    input[type="text"],
+    textarea {
       font-size: 1.05rem;
       padding: 0.95rem 1.15rem;
       border-radius: 12px;
@@ -118,9 +119,16 @@
       box-sizing: border-box;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35);
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+      line-height: 1.5;
     }
 
     button {
@@ -602,7 +610,7 @@
               <p>Drop a workout, nutrition, or recovery question and FitAI will architect your next step instantly.</p>
               <form method="post">
                 <label for="query">Your prompt</label>
-                <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
+                <textarea id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required></textarea>
                 <button type="submit">Ask {{ coach_name }}</button>
               </form>
             </div>
