@@ -96,6 +96,10 @@
       gap: 0.75rem;
     }
 
+    .prompt-panel form {
+      margin-top: 0;
+    }
+
     label {
       font-size: 0.95rem;
       font-weight: 600;
@@ -204,10 +208,16 @@
     .hero {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2rem;
-      align-items: center;
+      gap: 2.5rem;
+      align-items: flex-start;
       border-bottom: 1px solid var(--line);
       padding-bottom: 2rem;
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
     }
 
     .hero-copy .eyebrow {
@@ -219,9 +229,25 @@
     }
 
     .hero-copy .lede {
-      margin: 0.9rem 0 1.2rem;
+      margin: 0;
       font-size: 1.05rem;
       color: rgba(248, 250, 252, 0.85);
+    }
+
+    .prompt-panel {
+      border-radius: 18px;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.1), rgba(15, 23, 42, 0.85));
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 25px 65px rgba(2, 6, 23, 0.55), inset 0 0 0 1px rgba(148, 163, 184, 0.15);
+    }
+
+    .prompt-panel h2 {
+      margin: 0 0 0.6rem;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--muted);
     }
 
 
@@ -414,6 +440,14 @@
           </div>
         </div>
         <p class="lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
+        <div class="prompt-panel">
+          <h2>Plan your next move</h2>
+          <form method="post">
+            <label for="query">Your prompt</label>
+            <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
+            <button type="submit">Ask {{ coach_name }}</button>
+          </form>
+        </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
         <div class="holo-stage">
@@ -491,12 +525,6 @@
         </ul>
       </article>
     </section>
-
-    <form method="post">
-      <label for="query">Your prompt</label>
-      <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
-      <button type="submit">Ask {{ coach_name }}</button>
-    </form>
 
     {% if not model_ready %}
       <p class="model-warning">Ollama isn't running, so responses fall back to tips until the local model boots.</p>
