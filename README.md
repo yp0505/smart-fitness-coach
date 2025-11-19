@@ -1,4 +1,4 @@
-# 🧠 Smart Fitness Coach
+# 🧠 FitAI
 
 ### Personalized AI Health & Fitness App Powered by LLaMA3 (via Ollama) + FastAPI + LangChain
 
