@@ -23,17 +23,6 @@ EXAMPLE_PROMPTS = [
     "Suggest supplements that boost energy without jitters",
     "Visualize a balanced weekly workout schedule"
 ]
-COACH_NAME = "FitAI"
-HEALTH_TIPS = [
-    "Alternate hard and easy days to keep cortisol in check.",
-    "Stack 5-minute mobility breaks between meetings.",
-    "Get 2 minutes of sunlight within 30 minutes of waking.",
-]
-NUTRITION_TIPS = [
-    "Hydrate with 500ml of water + pinch of salt pre-workout.",
-    "Build plates with 40% veggies, 30% lean protein, 30% smart carbs.",
-    "Front-load protein at breakfast to support satiety all day.",
-]
 
 
 def _base_context(request: Request, **kwargs):
@@ -42,22 +31,13 @@ def _base_context(request: Request, **kwargs):
         "request": request,
         "response": "",
         "chart_json": None,
-        "examples": EXAMPLE_PROMPTS,
-        "coach_name": COACH_NAME,
-        "health_tips": HEALTH_TIPS,
-        "nutrition_tips": NUTRITION_TIPS,
-        "model_ready": llm is not None and embeddings is not None,
+        "examples": EXAMPLE_PROMPTS
     }
     base.update(kwargs)
     return base
 
-try:
-    llm = OllamaLLM(model="llama3")
-    embeddings = OllamaEmbeddings(model="llama3")
-except Exception as exc:
-    llm = None
-    embeddings = None
-    print("Ollama not available:", exc)
+llm = OllamaLLM(model="llama3")
+embeddings = OllamaEmbeddings(model="llama3")
 
 file_topic_map = {
     "fitness_knowledge/workouts.md": "workout",
@@ -67,27 +47,22 @@ file_topic_map = {
 }
 
 retrievers = {}
-if embeddings is not None:
-    try:
-        for path, topic in file_topic_map.items():
-            docs = TextLoader(path).load()
-            chunks = CharacterTextSplitter(chunk_size=500, chunk_overlap=50).split_documents(docs)
-            db = FAISS.from_documents(chunks, embeddings)
-            db.save_local(f"fitness_vectorstore_{topic}")
-            retriever = FAISS.load_local(
-                f"fitness_vectorstore_{topic}",
-                embeddings,
-                allow_dangerous_deserialization=True
-            ).as_retriever(search_kwargs={"k": 4})
-            retrievers[topic] = retriever
-    except Exception as exc:
-        retrievers = {}
-        print("Unable to build vector stores:", exc)
+for path, topic in file_topic_map.items():
+    docs = TextLoader(path).load()
+    chunks = CharacterTextSplitter(chunk_size=500, chunk_overlap=50).split_documents(docs)
+    db = FAISS.from_documents(chunks, embeddings)
+    db.save_local(f"fitness_vectorstore_{topic}")
+    retriever = FAISS.load_local(
+        f"fitness_vectorstore_{topic}",
+        embeddings,
+        allow_dangerous_deserialization=True
+    ).as_retriever(search_kwargs={"k": 4})
+    retrievers[topic] = retriever
 
 
 def build_prompt(context: str, question: str) -> str:
     instructions = (
-        f"You are {COACH_NAME}, a certified trainer and nutritionist built for smart fitness coaching. "
+        "You are Smart Fitness Coach, a certified trainer and nutritionist. "
         "Use the provided knowledge snippets to deliver structured, actionable guidance. "
         "Format the answer with short sections, bullet points, and bold labels when helpful."
     )
@@ -128,15 +103,6 @@ async def handle_query(request: Request, query: str = Form(...)):
             "index.html",
             _base_context(request, chart_json=chart_json)
         )
-    if llm is None or not retrievers:
-        offline_note = (
-            "The Ollama service is not running, so I can't stream a live answer. "
-            f"Start Ollama locally (ollama serve) and reload to chat with {COACH_NAME}."
-        )
-        return templates.TemplateResponse(
-            "index.html",
-            _base_context(request, response=offline_note)
-        )
     try:
         topic = route_query(query)
         retriever = retrievers[topic]
@@ -144,7 +110,7 @@ async def handle_query(request: Request, query: str = Form(...)):
         context = "\n\n".join(doc.page_content for doc in docs)
         prompt = build_prompt(context, query)
         result = llm.invoke(prompt)
-        print("Response:", result)
+        print("🧠 Response:", result)
     except Exception as e:
         result = f"Error: {str(e)}"
         print("Exception occurred:", result)
