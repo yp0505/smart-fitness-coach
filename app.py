@@ -57,7 +57,7 @@ try:
 except Exception as exc:
     llm = None
     embeddings = None
-    print("⚠️  Ollama not available:", exc)
+    print("Ollama not available:", exc)
 
 file_topic_map = {
     "fitness_knowledge/workouts.md": "workout",
@@ -82,7 +82,7 @@ if embeddings is not None:
             retrievers[topic] = retriever
     except Exception as exc:
         retrievers = {}
-        print("⚠️  Unable to build vector stores:", exc)
+        print("Unable to build vector stores:", exc)
 
 
 def build_prompt(context: str, question: str) -> str:
@@ -121,7 +121,7 @@ async def home(request: Request):
 
 @app.post("/", response_class=HTMLResponse)
 async def handle_query(request: Request, query: str = Form(...)):
-    print("💬 Query received:", query)
+    print("Query received:", query)
     if "visualize" in query.lower():
         chart_json = generate_workout_chart()
         return templates.TemplateResponse(
@@ -144,10 +144,10 @@ async def handle_query(request: Request, query: str = Form(...)):
         context = "\n\n".join(doc.page_content for doc in docs)
         prompt = build_prompt(context, query)
         result = llm.invoke(prompt)
-        print("🧠 Response:", result)
+        print("Response:", result)
     except Exception as e:
-        result = f"❌ Error: {str(e)}"
-        print("💥 Exception occurred:", result)
+        result = f"Error: {str(e)}"
+        print("Exception occurred:", result)
 
     return templates.TemplateResponse(
         "index.html",

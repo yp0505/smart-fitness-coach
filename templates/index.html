@@ -46,6 +46,36 @@
       gap: 0.6rem;
     }
 
+    .logo-lockup {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), transparent 55%), rgba(8, 21, 38, 0.85);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 30px rgba(8, 47, 73, 0.35);
+    }
+
+    .logo-mark svg {
+      width: 42px;
+      height: 42px;
+    }
+
+    .logo-caption {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 0.25rem 0;
+    }
+
     form {
       margin-top: 1.5rem;
       display: flex;
@@ -275,7 +305,31 @@
     <header class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Meet your AI trainer</p>
-        <h1>🏋️‍♀️ {{ coach_name }}</h1>
+        <div class="logo-lockup">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img" aria-label="FitAI monogram">
+              <defs>
+                <linearGradient id="fitai-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="50%" stop-color="#6ee7b7" />
+                  <stop offset="100%" stop-color="#f472b6" />
+                </linearGradient>
+                <linearGradient id="fitai-core" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(15,23,42,0.9)" />
+                  <stop offset="100%" stop-color="rgba(15,23,42,0.4)" />
+                </linearGradient>
+              </defs>
+              <circle cx="32" cy="32" r="29" fill="url(#fitai-core)" stroke="url(#fitai-gradient)" stroke-width="3" />
+              <path d="M22 42 V18 H38 C44 18 48 22 48 28 C48 34 44 38 38 38 H27" fill="none" stroke="url(#fitai-gradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M28 44 H44" stroke="url(#fitai-gradient)" stroke-width="4" stroke-linecap="round" />
+              <circle cx="44" cy="44" r="4" fill="#f8fafc" opacity="0.9" />
+            </svg>
+          </span>
+          <div>
+            <p class="logo-caption">Precision coaching</p>
+            <h1>{{ coach_name }}</h1>
+          </div>
+        </div>
         <p class="lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
       </div>
       <div class="hero-visual" aria-hidden="true">
@@ -344,14 +398,14 @@
 
     {% if response %}
       <div class="response">
-        <h3>🧠 {{ coach_name }} says:</h3>
+        <h3>{{ coach_name }} says:</h3>
         <div class="response-body">{{ response | replace('\n', '<br />') | safe }}</div>
       </div>
     {% endif %}
 
     {% if chart_json %}
       <div class="plotly-container">
-        <h3>📊 Workout Plan Visualization:</h3>
+        <h3>Workout Plan Visualization:</h3>
         <div id="workout_chart"></div>
       </div>
       <script>
