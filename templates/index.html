@@ -1,35 +1,541 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smart Fitness Coach</title>
+  <title>{{ coach_name }} | Smart Fitness Coach</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 700px; margin: auto; }
-    input, button { font-size: 1rem; padding: 0.6rem; margin-top: 10px; width: 100%; }
-    .response { margin-top: 2rem; background: #f4f4f4; padding: 1rem; border-left: 5px solid #00bfff; }
+    :root {
+      color-scheme: light dark;
+      --bg: radial-gradient(circle at top, #0d1b2a, #05060a 55%);
+      --card: rgba(13, 17, 23, 0.9);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #f472b6;
+      --line: rgba(148, 163, 184, 0.25);
+    }
+
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem 4rem;
+      box-sizing: border-box;
+    }
+
+    .app-shell {
+      width: min(900px, 100%);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 2.5rem;
+      box-shadow: 0 35px 120px rgba(15, 23, 42, 0.45);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.35rem, 5vw, 3rem);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-lockup {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-mark {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      border: 1px solid rgba(99, 102, 241, 0.6);
+      background: radial-gradient(circle at 20% 20%, rgba(236, 72, 153, 0.6), transparent 55%),
+        linear-gradient(160deg, rgba(15, 23, 42, 0.9), rgba(4, 7, 18, 0.7));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.65);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      opacity: 0.6;
+    }
+
+    .logo-mark svg {
+      width: 46px;
+      height: 46px;
+      z-index: 1;
+    }
+
+    .logo-caption {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 0.25rem 0;
+    }
+
+    form {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    input[type="text"] {
+      font-size: 1.05rem;
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35);
+    }
+
+    button {
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.9rem 1.1rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(120deg, #0ea5e9, #38bdf8);
+      color: #0b1120;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .examples {
+      margin-top: 1.8rem;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 16px;
+      padding: 1.25rem 1.4rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .examples h3 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .prompt-chip {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--text);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .prompt-chip:hover {
+      background: rgba(56, 189, 248, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .response {
+      margin-top: 2rem;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 16px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 1.5rem;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.1);
+    }
+
+    .response h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .response-body {
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .plotly-container {
+      margin-top: 2rem;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 2rem;
+    }
+
+    .hero-copy .eyebrow {
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0 0 0.5rem;
+    }
+
+    .hero-copy .lede {
+      margin: 0.9rem 0 1.2rem;
+      font-size: 1.05rem;
+      color: rgba(248, 250, 252, 0.85);
+    }
+
+
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+    }
+
+    .holo-stage {
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .holo-screen {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 28px;
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      padding: 1.2rem;
+      background: radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.4), rgba(3, 7, 18, 0.95));
+      box-shadow: 0 35px 80px rgba(2, 6, 23, 0.85), inset 0 0 60px rgba(59, 130, 246, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .holo-screen::after {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(248, 250, 252, 0.08);
+      background: radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.25), transparent 55%);
+      z-index: 0;
+    }
+
+    .holo-avatar {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .holo-data {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.6rem;
+      width: 100%;
+    }
+
+    .data-chip {
+      text-align: center;
+      padding: 0.6rem 0.4rem;
+      border-radius: 12px;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      background: rgba(15, 23, 42, 0.65);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .data-chip span {
+      display: block;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .holo-base {
+      width: 220px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.45), rgba(0, 0, 0, 0));
+      position: relative;
+      filter: blur(0.5px);
+      margin-top: -0.5rem;
+    }
+
+    .holo-pulse {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(96, 165, 250, 0.5);
+      animation: pulse 4s infinite;
+    }
+
+    .holo-pulse.second {
+      animation-delay: 1.5s;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.8;
+      }
+      80% {
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1.4);
+        opacity: 0;
+      }
+    }
+
+    .tips-grid {
+      margin: 2rem 0 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .tip-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.2rem;
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .tip-card h3 {
+      margin-top: 0;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+
+    .tip-card ul {
+      padding-left: 1.1rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .tip-card li {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .model-warning {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: rgba(244, 114, 182, 0.12);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(244, 114, 182, 0.35);
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        padding: 1.75rem;
+      }
+      .hero {
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>🏋️ Smart Fitness Coach</h1>
-  <form method="post">
-    <input type="text" name="query" placeholder="Ask your coach (e.g. show workout table)" required />
-    <button type="submit">Send</button>
-  </form>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Meet your AI trainer</p>
+        <div class="logo-lockup">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img" aria-label="FitAI hologram badge">
+              <defs>
+                <linearGradient id="logoBeam" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="50%" stop-color="#a855f7" />
+                  <stop offset="100%" stop-color="#f472b6" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="8" width="44" height="48" rx="10" fill="rgba(15,23,42,0.85)" stroke="url(#logoBeam)" stroke-width="2" />
+              <circle cx="32" cy="18" r="8" fill="url(#logoBeam)" opacity="0.9" />
+              <path d="M32 26 L38 38" stroke="url(#logoBeam)" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M32 26 L26 38" stroke="url(#logoBeam)" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M26 38 L20 48" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M38 38 L44 34" stroke="#f472b6" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M32 26 L32 48" stroke="url(#logoBeam)" stroke-width="3.5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <div>
+            <p class="logo-caption">Precision coaching</p>
+            <h1>{{ coach_name }}</h1>
+          </div>
+        </div>
+        <p class="lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="holo-stage">
+          <div class="holo-screen">
+            <svg class="holo-avatar" viewBox="0 0 260 320" role="img" aria-label="FitAI holographic workout">
+              <defs>
+                <linearGradient id="avatarGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="45%" stop-color="#34d399" />
+                  <stop offset="100%" stop-color="#f472b6" />
+                </linearGradient>
+                <linearGradient id="panel" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(15,23,42,0.2)" />
+                  <stop offset="100%" stop-color="rgba(15,23,42,0.8)" />
+                </linearGradient>
+                <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <rect x="20" y="30" width="220" height="260" rx="24" fill="url(#panel)" stroke="rgba(59,130,246,0.5)" stroke-width="2" />
+              <g stroke="#1f2937" stroke-width="1" opacity="0.35">
+                <line x1="40" y1="70" x2="220" y2="70" />
+                <line x1="40" y1="110" x2="220" y2="110" />
+                <line x1="40" y1="150" x2="220" y2="150" />
+                <line x1="40" y1="190" x2="220" y2="190" />
+              </g>
+              <circle cx="130" cy="70" r="26" fill="none" stroke="url(#avatarGlow)" stroke-width="5" filter="url(#softGlow)" />
+              <path d="M130 96 L130 150" stroke="url(#avatarGlow)" stroke-width="10" stroke-linecap="round" />
+              <path d="M130 120 L168 145" stroke="url(#avatarGlow)" stroke-width="10" stroke-linecap="round" />
+              <path d="M130 120 L92 145" stroke="url(#avatarGlow)" stroke-width="10" stroke-linecap="round" />
+              <path d="M130 150 L160 210" stroke="url(#avatarGlow)" stroke-width="10" stroke-linecap="round" />
+              <path d="M130 150 L108 210" stroke="url(#avatarGlow)" stroke-width="10" stroke-linecap="round" />
+              <path d="M160 210 Q170 195 188 188" stroke="#34d399" stroke-width="7" stroke-linecap="round" />
+              <path d="M108 210 Q96 230 82 238" stroke="#38bdf8" stroke-width="7" stroke-linecap="round" />
+              <path d="M120 240 L160 240" stroke="#f472b6" stroke-width="8" stroke-linecap="round" />
+              <rect x="50" y="205" width="40" height="10" rx="5" fill="rgba(248, 250, 252, 0.35)" />
+              <rect x="170" y="120" width="40" height="10" rx="5" fill="rgba(248, 250, 252, 0.35)" />
+              <circle cx="130" cy="70" r="10" fill="#38bdf8" />
+              <circle cx="168" cy="145" r="6" fill="#f472b6" />
+              <circle cx="92" cy="145" r="6" fill="#34d399" />
+            </svg>
+          </div>
+          <div class="holo-data">
+            <div class="data-chip"><span>82%</span>Form</div>
+            <div class="data-chip"><span>124</span>BPM</div>
+            <div class="data-chip"><span>36s</span>Hold</div>
+          </div>
+          <div class="holo-base">
+            <span class="holo-pulse"></span>
+            <span class="holo-pulse second"></span>
+          </div>
+        </div>
+      </div>
+    </header>
 
-  {% if response %}
-    <div class="response">
-      <h3>🧠 Coach says:</h3>
-      <p>{{ response }}</p>
-    </div>
-  {% endif %}
+    <section class="tips-grid" aria-label="Daily tips">
+      <article class="tip-card">
+        <h3>Health rituals</h3>
+        <ul>
+          {% for tip in health_tips %}
+            <li>{{ tip }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+      <article class="tip-card">
+        <h3>Nutrition intel</h3>
+        <ul>
+          {% for tip in nutrition_tips %}
+            <li>{{ tip }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+    </section>
 
-  {% if chart_json %}
-    <h3>📊 Workout Plan Visualization:</h3>
-    <div id="workout_chart"></div>
-    <script>
-      const chartData = {{ chart_json | safe }};
-      Plotly.newPlot("workout_chart", chartData.data, chartData.layout);
-    </script>
-  {% endif %}
+    <form method="post">
+      <label for="query">Your prompt</label>
+      <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
+      <button type="submit">Ask {{ coach_name }}</button>
+    </form>
+
+    {% if not model_ready %}
+      <p class="model-warning">Ollama isn't running, so responses fall back to tips until the local model boots.</p>
+    {% endif %}
+
+    <section class="examples">
+      <h3>Quick ideas</h3>
+      <div class="prompt-grid">
+        {% for example in examples %}
+          <button type="button" class="prompt-chip" data-prompt="{{ example }}">{{ example }}</button>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% if response %}
+      <div class="response">
+        <h3>{{ coach_name }} says:</h3>
+        <div class="response-body">{{ response | replace('\n', '<br />') | safe }}</div>
+      </div>
+    {% endif %}
+
+    {% if chart_json %}
+      <div class="plotly-container">
+        <h3>Workout Plan Visualization:</h3>
+        <div id="workout_chart"></div>
+      </div>
+      <script>
+        const chartData = {{ chart_json | safe }};
+        Plotly.newPlot("workout_chart", chartData.data, chartData.layout);
+      </script>
+    {% endif %}
+  </div>
+
+  <script>
+    const promptInput = document.getElementById('query');
+    document.querySelectorAll('.prompt-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        promptInput.value = chip.dataset.prompt;
+        promptInput.focus();
+      });
+    });
+  </script>
 </body>
 </html>
