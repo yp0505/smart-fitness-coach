@@ -236,7 +236,7 @@
 
     .hero-showcase {
       display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(260px, 1fr);
+      grid-template-columns: 1fr;
       gap: 1.75rem;
       align-items: stretch;
     }
@@ -316,18 +316,17 @@
       color: var(--accent);
     }
 
-    .prompt-tower {
-      border-radius: 28px;
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      background: linear-gradient(180deg, rgba(14, 165, 233, 0.18), rgba(2, 6, 23, 0.92));
-      padding: 1.75rem;
+    .control-room-form {
+      border-radius: 22px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(2, 6, 23, 0.85));
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-      box-shadow: 0 30px 80px rgba(2, 6, 23, 0.65);
     }
 
-    .prompt-tower .prompt-eyebrow {
+    .control-room-form .prompt-eyebrow {
       font-size: 0.8rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
@@ -335,20 +334,19 @@
       margin: 0;
     }
 
-    .prompt-tower h2 {
+    .control-room-form h3 {
       margin: 0;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
     }
 
-    .prompt-tower p {
+    .control-room-form p {
       margin: 0;
-      color: rgba(248, 250, 252, 0.8);
+      color: rgba(248, 250, 252, 0.85);
       font-size: 0.95rem;
     }
 
-    .prompt-tower form {
-      margin-top: 0.25rem;
-      flex: 1;
+    .control-room-form form {
+      margin-top: 0.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
@@ -495,9 +493,6 @@
       .hero-showcase {
         grid-template-columns: 1fr;
       }
-      .prompt-tower {
-        order: -1;
-      }
     }
   </style>
 </head>
@@ -601,18 +596,18 @@
               <div class="metric-chip"><span>+15%</span>Consistency</div>
               <div class="metric-chip"><span>4.9</span>Energy</div>
             </div>
+            <div class="control-room-form">
+              <p class="prompt-eyebrow">Plan your next move</p>
+              <h3>Ask {{ coach_name }}</h3>
+              <p>Drop a workout, nutrition, or recovery question and FitAI will architect your next step instantly.</p>
+              <form method="post">
+                <label for="query">Your prompt</label>
+                <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
+                <button type="submit">Ask {{ coach_name }}</button>
+              </form>
+            </div>
           </div>
         </article>
-        <aside class="prompt-tower">
-          <p class="prompt-eyebrow">Plan your next move</p>
-          <h2>Ask {{ coach_name }}</h2>
-          <p>Drop a workout, nutrition, or recovery question and FitAI will architect your next step instantly.</p>
-          <form method="post">
-            <label for="query">Your prompt</label>
-            <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
-            <button type="submit">Ask {{ coach_name }}</button>
-          </form>
-        </aside>
       </div>
     </header>
 
