@@ -223,7 +223,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       column-gap: 2.5rem;
-      row-gap: 0.75rem;
+      row-gap: 0.35rem;
       align-items: flex-start;
       align-content: flex-start;
       grid-auto-rows: min-content;
@@ -261,6 +261,11 @@
     .hero .prompt-panel {
       width: 100%;
       margin: 0;
+    }
+
+    .hero-frame .prompt-panel {
+      grid-column: 1 / -1;
+      margin-top: 0.2rem;
     }
 
     .prompt-panel h2 {
@@ -517,14 +522,14 @@
             <span class="holo-pulse second"></span>
           </div>
         </div>
-      </div>
-      <div class="prompt-panel">
-        <h2>Plan your next move</h2>
-        <form method="post">
-          <label for="query">Your prompt</label>
-          <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
-          <button type="submit">Ask {{ coach_name }}</button>
-        </form>
+        <div class="prompt-panel">
+          <h2>Plan your next move</h2>
+          <form method="post">
+            <label for="query">Your prompt</label>
+            <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
+            <button type="submit">Ask {{ coach_name }}</button>
+          </form>
+        </div>
       </div>
       <p class="lede hero-lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
     </header>
