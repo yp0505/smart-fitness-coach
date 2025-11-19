@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smart Fitness Coach</title>
+  <title>{{ coach_name }} | Smart Fitness Coach</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     :root {
@@ -181,19 +181,6 @@
       color: rgba(248, 250, 252, 0.85);
     }
 
-    .persona-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
-    .persona-badges span {
-      border-radius: 999px;
-      border: 1px solid rgba(56, 189, 248, 0.5);
-      padding: 0.35rem 0.8rem;
-      font-size: 0.85rem;
-      background: rgba(56, 189, 248, 0.12);
-    }
 
     .hero-visual {
       display: flex;
@@ -280,9 +267,6 @@
       .hero {
         text-align: center;
       }
-      .hero-copy .persona-badges {
-        justify-content: center;
-      }
     }
   </style>
 </head>
@@ -291,13 +275,8 @@
     <header class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Meet your AI trainer</p>
-        <h1>🏋️‍♀️ FitMind Coach</h1>
+        <h1>🏋️‍♀️ {{ coach_name }}</h1>
         <p class="lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
-        <div class="persona-badges">
-          {% for name in hero_names %}
-            <span>{{ name }}</span>
-          {% endfor %}
-        </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
         <div class="avatar-frame">
@@ -346,8 +325,8 @@
 
     <form method="post">
       <label for="query">Your prompt</label>
-      <input type="text" id="query" name="query" placeholder="Ask your coach (e.g. show workout table)" required />
-      <button type="submit">Ask the coach</button>
+      <input type="text" id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required />
+      <button type="submit">Ask {{ coach_name }}</button>
     </form>
 
     {% if not model_ready %}
@@ -365,7 +344,7 @@
 
     {% if response %}
       <div class="response">
-        <h3>🧠 Coach says:</h3>
+        <h3>🧠 {{ coach_name }} says:</h3>
         <div class="response-body">{{ response | replace('\n', '<br />') | safe }}</div>
       </div>
     {% endif %}

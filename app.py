@@ -23,8 +23,7 @@ EXAMPLE_PROMPTS = [
     "Suggest supplements that boost energy without jitters",
     "Visualize a balanced weekly workout schedule"
 ]
-
-HERO_NAMES = ["FitPro Coach", "CoachX", "ZenFit Guide", "FitMind Coach", "PulseForm AI"]
+COACH_NAME = "FitAI"
 HEALTH_TIPS = [
     "Alternate hard and easy days to keep cortisol in check.",
     "Stack 5-minute mobility breaks between meetings.",
@@ -44,7 +43,7 @@ def _base_context(request: Request, **kwargs):
         "response": "",
         "chart_json": None,
         "examples": EXAMPLE_PROMPTS,
-        "hero_names": HERO_NAMES,
+        "coach_name": COACH_NAME,
         "health_tips": HEALTH_TIPS,
         "nutrition_tips": NUTRITION_TIPS,
         "model_ready": llm is not None and embeddings is not None,
@@ -88,7 +87,7 @@ if embeddings is not None:
 
 def build_prompt(context: str, question: str) -> str:
     instructions = (
-        "You are Smart Fitness Coach, a certified trainer and nutritionist. "
+        f"You are {COACH_NAME}, a certified trainer and nutritionist built for smart fitness coaching. "
         "Use the provided knowledge snippets to deliver structured, actionable guidance. "
         "Format the answer with short sections, bullet points, and bold labels when helpful."
     )
@@ -132,7 +131,7 @@ async def handle_query(request: Request, query: str = Form(...)):
     if llm is None or not retrievers:
         offline_note = (
             "The Ollama service is not running, so I can't stream a live answer. "
-            "Start Ollama locally (ollama serve) and reload to chat with the coach."
+            f"Start Ollama locally (ollama serve) and reload to chat with {COACH_NAME}."
         )
         return templates.TemplateResponse(
             "index.html",
