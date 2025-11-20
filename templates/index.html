@@ -1,35 +1,629 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smart Fitness Coach</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ coach_name }} | Smart Fitness Coach</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 700px; margin: auto; }
-    input, button { font-size: 1rem; padding: 0.6rem; margin-top: 10px; width: 100%; }
-    .response { margin-top: 2rem; background: #f4f4f4; padding: 1rem; border-left: 5px solid #00bfff; }
+    :root {
+      color-scheme: light dark;
+      --bg: radial-gradient(circle at top, #0d1b2a, #05060a 55%);
+      --card: rgba(13, 17, 23, 0.9);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #f472b6;
+      --line: rgba(148, 163, 184, 0.25);
+    }
+
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem 4rem;
+      box-sizing: border-box;
+    }
+
+    .app-shell {
+      width: min(900px, 100%);
+      background: var(--card);
+      border-radius: 18px;
+      padding: 2.5rem;
+      box-shadow: 0 35px 120px rgba(15, 23, 42, 0.45);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.35rem, 5vw, 3rem);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-lockup {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-mark {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      border: 1px solid rgba(99, 102, 241, 0.6);
+      background: radial-gradient(circle at 20% 20%, rgba(236, 72, 153, 0.6), transparent 55%),
+        linear-gradient(160deg, rgba(15, 23, 42, 0.9), rgba(4, 7, 18, 0.7));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.65);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      opacity: 0.6;
+    }
+
+    .logo-mark svg {
+      width: 46px;
+      height: 46px;
+      z-index: 1;
+    }
+
+    .logo-caption {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 0.25rem 0;
+    }
+
+    form {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    textarea {
+      font-size: 1.05rem;
+      padding: 0.95rem 1.15rem;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.5;
+      font-size: 1.1rem;
+    }
+
+    button {
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.9rem 1.1rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(120deg, #0ea5e9, #38bdf8);
+      color: #0b1120;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .prompt-cards {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .prompt-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      padding: 1.35rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 25px 60px rgba(2, 6, 23, 0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      isolation: isolate;
+    }
+
+    .prompt-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--card-gradient, linear-gradient(135deg, #0f172a, #0b1220));
+      opacity: 0.35;
+      z-index: 0;
+    }
+
+    .prompt-card::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 17px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    .prompt-card > * { z-index: 1; }
+
+    .prompt-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .prompt-card h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-card .play-pill {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(248, 250, 252, 0.15);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.15);
+    }
+
+    .prompt-card .play-pill svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--card-accent, #38bdf8);
+    }
+
+    .prompt-card p {
+      margin: 0;
+      color: rgba(248, 250, 252, 0.85);
+      line-height: 1.45;
+    }
+
+    .prompt-card .prompt-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .prompt-card .pill {
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(248, 250, 252, 0.15);
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .prompt-card .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .prompt-card button.card-cta {
+      background: var(--card-accent, #38bdf8);
+      color: #0b1120;
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .prompt-card button.card-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(56, 189, 248, 0.45);
+    }
+
+    .prompt-card a.card-link {
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+      opacity: 0.85;
+    }
+
+    .prompt-card a.card-link:hover { opacity: 1; }
+
+    .prompt-card .prompt-body {
+      padding: 0.65rem 0.85rem;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+
+    .response {
+      margin-top: 2rem;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 16px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 1.5rem;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.1);
+    }
+
+    .response h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .response-body {
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .plotly-container {
+      margin-top: 2rem;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 2.25rem;
+    }
+
+    .hero-intro {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .hero-intro .eyebrow {
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .hero-lede {
+      margin: 0.35rem 0 0;
+      font-size: 1.05rem;
+      color: rgba(248, 250, 252, 0.85);
+    }
+
+    .hero-showcase {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+      align-items: stretch;
+    }
+
+    .coach-card {
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.08), rgba(15, 23, 42, 0.85));
+      border-radius: 22px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 1.75rem;
+      box-shadow: 0 40px 80px rgba(2, 6, 23, 0.7);
+    }
+
+    .control-room-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .control-room-logo {
+      width: 1em;
+      height: 1.25em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .control-room-form {
+      border-radius: 22px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(2, 6, 23, 0.85));
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      align-self: stretch;
+    }
+
+    .control-room-form .prompt-eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .control-room-form h3 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .control-room-form p {
+      margin: 0;
+      color: rgba(248, 250, 252, 0.85);
+      font-size: 0.95rem;
+    }
+
+    .control-room-form form {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .tips-grid {
+      margin: 2rem 0 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .tip-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1.2rem;
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .tip-card h3 {
+      margin-top: 0;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+
+    .tip-card ul {
+      padding-left: 1.1rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .tip-card li {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .model-warning {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: rgba(244, 114, 182, 0.12);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(244, 114, 182, 0.35);
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        padding: 1.75rem;
+      }
+      .hero-showcase {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>🏋️ Smart Fitness Coach</h1>
-  <form method="post">
-    <input type="text" name="query" placeholder="Ask your coach (e.g. show workout table)" required />
-    <button type="submit">Send</button>
-  </form>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="hero-intro">
+        <p class="eyebrow">Meet your AI trainer</p>
+        <div class="logo-lockup">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img" aria-label="FitAI hologram badge">
+              <defs>
+                <linearGradient id="logoBeam" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="50%" stop-color="#a855f7" />
+                  <stop offset="100%" stop-color="#f472b6" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="8" width="44" height="48" rx="10" fill="rgba(15,23,42,0.85)" stroke="url(#logoBeam)" stroke-width="2" />
+              <circle cx="32" cy="18" r="8" fill="url(#logoBeam)" opacity="0.9" />
+              <path d="M32 26 L38 38" stroke="url(#logoBeam)" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M32 26 L26 38" stroke="url(#logoBeam)" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M26 38 L20 48" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M38 38 L44 34" stroke="#f472b6" stroke-width="3.5" stroke-linecap="round" />
+              <path d="M32 26 L32 48" stroke="url(#logoBeam)" stroke-width="3.5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <div>
+            <p class="logo-caption">Precision coaching</p>
+            <h1>{{ coach_name }}</h1>
+          </div>
+        </div>
+        <p class="hero-lede">A science-backed guide that blends movement, mindfulness, and macros so you always know the next best step.</p>
+      </div>
+      <div class="hero-showcase">
+        <article class="coach-card">
+          <div class="control-room-form">
+            <div class="control-room-title">
+              <span class="control-room-logo" aria-hidden="true">
+                <svg viewBox="0 0 90 120" role="img" aria-label="FitAI control room logo">
+                  <defs>
+                    <linearGradient id="controlRoomGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#38bdf8" />
+                      <stop offset="50%" stop-color="#a855f7" />
+                      <stop offset="100%" stop-color="#34d399" />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="45" cy="20" r="15" fill="none" stroke="url(#controlRoomGradient)" stroke-width="6" />
+                  <path d="M45 38 L45 68" stroke="url(#controlRoomGradient)" stroke-width="8" stroke-linecap="round" />
+                  <path d="M45 50 L20 70" stroke="#38bdf8" stroke-width="8" stroke-linecap="round" />
+                  <path d="M45 50 L70 70" stroke="#f472b6" stroke-width="8" stroke-linecap="round" />
+                  <path d="M45 68 L25 100" stroke="#34d399" stroke-width="8" stroke-linecap="round" />
+                  <path d="M45 68 L65 100" stroke="#a855f7" stroke-width="8" stroke-linecap="round" />
+                  <path d="M15 60 L35 60" stroke="rgba(148,163,184,0.7)" stroke-width="6" stroke-linecap="round" />
+                  <path d="M55 90 L75 90" stroke="rgba(148,163,184,0.7)" stroke-width="6" stroke-linecap="round" />
+                </svg>
+              </span>
+              <span>{{ coach_name }} control room</span>
+            </div>
+            <p class="prompt-eyebrow">Plan your next move</p>
+            <h3>Ask {{ coach_name }}</h3>
+            <p>Drop a workout, nutrition, or recovery question and FitAI will architect your next step instantly.</p>
+            <form method="post">
+              <label for="query">Your prompt</label>
+              <textarea id="query" name="query" placeholder="Ask {{ coach_name }} (e.g. show workout table)" required></textarea>
+              <button type="submit">Ask {{ coach_name }}</button>
+            </form>
+          </div>
+        </article>
+      </div>
+    </header>
 
-  {% if response %}
-    <div class="response">
-      <h3>🧠 Coach says:</h3>
-      <p>{{ response }}</p>
-    </div>
-  {% endif %}
+    <section class="tips-grid" aria-label="Daily tips">
+      <article class="tip-card">
+        <h3>Health rituals</h3>
+        <ul>
+          {% for tip in health_tips %}
+            <li>{{ tip }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+      <article class="tip-card">
+        <h3>Nutrition intel</h3>
+        <ul>
+          {% for tip in nutrition_tips %}
+            <li>{{ tip }}</li>
+          {% endfor %}
+        </ul>
+      </article>
+    </section>
 
-  {% if chart_json %}
-    <h3>📊 Workout Plan Visualization:</h3>
-    <div id="workout_chart"></div>
-    <script>
-      const chartData = {{ chart_json | safe }};
-      Plotly.newPlot("workout_chart", chartData.data, chartData.layout);
-    </script>
-  {% endif %}
+    {% if not model_ready %}
+      <p class="model-warning">Ollama isn't running, so responses fall back to tips until the local model boots.</p>
+    {% endif %}
+
+    <section aria-label="Prompt cards" class="prompt-cards">
+      {% for card in prompt_cards %}
+        <article class="prompt-card" style="--card-gradient: {{ card.gradient }}; --card-accent: {{ card.accent }};">
+          <div class="prompt-card-header">
+            <span class="play-pill" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" aria-label="Play icon">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </span>
+            <div>
+              <p class="logo-caption">Prompt card</p>
+              <h3>{{ card.title }}</h3>
+            </div>
+          </div>
+          <p>{{ card.subtitle }}</p>
+          <div class="prompt-meta">
+            <span class="pill" aria-hidden="true">Adaptive</span>
+            <span class="pill" aria-hidden="true">Copy &amp; run</span>
+            <span class="pill" aria-hidden="true">For {{ coach_name }}</span>
+          </div>
+          <div class="prompt-body">{{ card.prompt }}</div>
+          <div class="cta-row">
+            <button type="button" class="card-cta" data-prompt="{{ card.prompt }}">{{ card.cta }}</button>
+            {% if card.link %}
+              <a class="card-link" href="{{ card.link }}" target="_blank" rel="noopener">Watch inspo →</a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+
+    {% if response %}
+      <div class="response">
+        <h3>{{ coach_name }} says:</h3>
+        <div class="response-body">{{ response | replace('\n', '<br />') | safe }}</div>
+      </div>
+    {% endif %}
+
+    {% if chart_json %}
+      <div class="plotly-container">
+        <h3>Workout Plan Visualization:</h3>
+        <div id="workout_chart"></div>
+      </div>
+      <script>
+        const chartData = {{ chart_json | safe }};
+        Plotly.newPlot("workout_chart", chartData.data, chartData.layout);
+      </script>
+    {% endif %}
+  </div>
+
+  <script>
+    const promptInput = document.getElementById('query');
+    document.querySelectorAll('.prompt-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        promptInput.value = chip.dataset.prompt;
+        promptInput.focus();
+      });
+    });
+
+    document.querySelectorAll('.card-cta').forEach(btn => {
+      btn.addEventListener('click', () => {
+        promptInput.value = btn.dataset.prompt;
+        promptInput.focus();
+      });
+    });
+  </script>
 </body>
 </html>
