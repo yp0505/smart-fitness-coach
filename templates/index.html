@@ -227,22 +227,6 @@
       line-height: 1.45;
     }
 
-    .prompt-card .prompt-meta {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .prompt-card .pill {
-      padding: 0.35rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid rgba(248, 250, 252, 0.15);
-      background: rgba(15, 23, 42, 0.5);
-    }
-
     .prompt-card .cta-row {
       display: flex;
       align-items: center;
@@ -267,18 +251,6 @@
       transform: translateY(-1px);
       box-shadow: 0 14px 34px rgba(56, 189, 248, 0.45);
     }
-
-    .prompt-card a.card-link {
-      color: var(--text);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-weight: 600;
-      opacity: 0.85;
-    }
-
-    .prompt-card a.card-link:hover { opacity: 1; }
 
     .prompt-card .prompt-body {
       padding: 0.65rem 0.85rem;
@@ -574,17 +546,9 @@
             </div>
           </div>
           <p>{{ card.subtitle }}</p>
-          <div class="prompt-meta">
-            <span class="pill" aria-hidden="true">Adaptive</span>
-            <span class="pill" aria-hidden="true">Copy &amp; run</span>
-            <span class="pill" aria-hidden="true">For {{ coach_name }}</span>
-          </div>
           <div class="prompt-body">{{ card.prompt }}</div>
           <div class="cta-row">
             <button type="button" class="card-cta" data-prompt="{{ card.prompt }}">{{ card.cta }}</button>
-            {% if card.link %}
-              <a class="card-link" href="{{ card.link }}" target="_blank" rel="noopener">Watch inspo →</a>
-            {% endif %}
           </div>
         </article>
       {% endfor %}

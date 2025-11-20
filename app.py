@@ -31,7 +31,6 @@ PROMPT_CARDS = [
         "prompt": "Design a 3-day hybrid strength + mobility plan with progressive overload and a post-workout macro breakdown.",
         "accent": "#ef4444",
         "gradient": "linear-gradient(135deg, #0f172a, #172554, #0ea5e9)",
-        "link": "https://youtu.be/N-EHhfAkPR8?si=TnhwqNGKMfVOMXtX",
         "cta": "Use this prompt"
     },
     {
@@ -40,7 +39,6 @@ PROMPT_CARDS = [
         "prompt": "Build a recovery day for sore hamstrings: include mobility flow, walking intervals, and evening sleep routine.",
         "accent": "#22d3ee",
         "gradient": "linear-gradient(135deg, #0f172a, #0b1220, #22d3ee)",
-        "link": None,
         "cta": "Fill into FitAI"
     },
     {
@@ -49,7 +47,6 @@ PROMPT_CARDS = [
         "prompt": "Create a 2,200 kcal meal plan for a 6am lifter: pre-workout snack, post-workout breakfast, and dinner.",
         "accent": "#f59e0b",
         "gradient": "linear-gradient(135deg, #0f172a, #111827, #f59e0b)",
-        "link": None,
         "cta": "Try this fuel plan"
     }
 ]
